@@ -143,9 +143,13 @@ $event-&gt;createEventData('Lead', 'call', 'IVR Call', 50);
  */
 //$event-&gt;createCampaignParameters($campaign);
 
+/* By default, payload is sent on __destruct(). If the pixel needs to be in a sensible page
+ * structure, call the sendPayload() method directly, where you want the pixel to appear.
+ */
+//$event-&gt;sendPayload();
 </code></pre>
 
-<p>At script end (on Destruct), the cookie is sent (if display is irrelevant). If a page actually needs to display something.</p>
+<p>At script end (on Destruct), the cookie is sent (if display is irrelevant). If a page actually needs to display something in proper HTML, call the <code>sendPayload()</code> method directly (it will disable the send on <code>__destruct()</code>).</p>
 
 <h1>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
