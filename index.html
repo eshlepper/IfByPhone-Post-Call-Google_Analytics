@@ -35,14 +35,14 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-37342357-4', 'auto');
+  ga('create', 'UA-XXXXXXXX-X', 'auto');
   ga('send', 'pageview');
 
 &lt;/script&gt;
 </code></pre>
 
 <h2>
-<a id="this-is-a-great-system-but-breaks-down-for-users-under-some-unique-situations" class="anchor" href="#this-is-a-great-system-but-breaks-down-for-users-under-some-unique-situations" aria-hidden="true"><span class="octicon octicon-link"></span></a>This is a great system, but breaks down for users under some unique situations:</h2>
+<a id="this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" class="anchor" href="#this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" aria-hidden="true"><span class="octicon octicon-link"></span></a>This is a great system, but breaks down for users under some unique use cases/situations:</h2>
 
 <ol>
 <li>Users running browsers that are not Javascript enabled (rare) obviously won't be able to run the client-side Javascript.</li>
@@ -53,9 +53,68 @@
 </ol>
 
 <h2>
-<a id="these-last-two-scenarios-are-the-purpose-of-this-class" class="anchor" href="#these-last-two-scenarios-are-the-purpose-of-this-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>These last two scenarios are the purpose of this class</h2>
+<a id="these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" class="anchor" href="#these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>These last two (really just one) scenarios are the purpose of this class</h2>
 
-<p>The purpose of this class is to utilize the Google Analytics "Measurement Protocol" API (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a>, which allows all the parameters that would be collected via the Javascript API to be specified. Unfortunately, while these would be collected in a purely automated fashion by the Javascript API, using the Measurement Protocol requires these to be manually specified (and of course lacks access to many client-side </p>
+<p>The purpose of this class is to utilize the Google Analytics "Measurement Protocol" API (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a>, which allows all the parameters that would be collected via the Javascript API to be specified. Unfortunately, while these would be collected in a purely automated fashion by the Javascript API, using the Measurement Protocol requires these to be manually specified (and of course lacks access to many client-side functions that are only available to Javascript running in a user's browser… sorry), such as many of the following:</p>
+
+<ol>
+<li>Browser Capabilities</li>
+<li>Screen size &amp; resolution</li>
+<li>Latitude/Longitude, location data</li>
+<li>Device information, etc.</li>
+</ol>
+
+<h3>
+<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limitations!</h3>
+
+<p>My own intended use of this class precludes the inclusion of a number of the functions possible, and limits itself primarily to basic event/pageview information, and general call metadata, and does nothing yet to address the following potential actions (which would require new methods to be built-out, which cold be done quite simply, but I simply have no need for it). Examples include:</p>
+
+<ol>
+<li>Ecommerce functions: product prices, tax, totals, etc.</li>
+<li>Creative, content, and other functions.</li>
+<li>Conversion tracking, etc.</li>
+</ol>
+
+<p>If these items are needed, perhaps discuss some use cases with the author, fork and create your own methods (Referring to the needed values and parameters documented at in the (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a> for the Measurement Protocol, or perhaps simply search for a better class for your purpose on Github. It should be a simple matter, following the design pattern shown in the class: add a public method for the purpose that inserts the values into the $this-&gt;payload array (or one-offs using the <code>setCustomDimension($name, $value)</code> method.</p>
+
+<h1>
+<a id="setup-and-configuration" class="anchor" href="#setup-and-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup and Configuration</h1>
+
+<h2>
+<a id="1-setup-your-ivr-webhooksurvo-netget-in-your-dialogtech-console" class="anchor" href="#1-setup-your-ivr-webhooksurvo-netget-in-your-dialogtech-console" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Setup your IVR Webhook/SurVo Netget in your DialogTech Console</h2>
+
+<p>IfByPhone.com/DialogTech.com is not a free service, and access to features (such as the ability to use web hooks in this way) are not available to all service levels. Speak with your account rep about whether you have these functions enabled. Once enabled, you can use the SurVo Post-Call Action (or comparable IVR function) to set this up. The below image is an example of the former. Exact appearance will vary with the latter:</p>
+
+<p><img src="http://i.imgur.com/7FjyPo2.png" alt="DialogTech/IfByPhone Post-Call Action Panel Setup"></p>
+
+<p>It doesn't matter what you call the parameters in the left column of this setup, but bear in mind that they will be sent using these names, and the Class will expect them as such. Call them what you please, but they must match up to the $ga_custom_dimensions array (detailed below) which acts as the interpreter between the data sent, and which custom dimensions it is stored as in Google Analytics. For simplicity, set this up exactly as shown.</p>
+
+<h2>
+<a id="2-setup-of-google-analytics-custom-dimensions" class="anchor" href="#2-setup-of-google-analytics-custom-dimensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Setup of Google Analytics Custom Dimensions</h2>
+
+<p>In order to match the data sent from the DialogTech Post-Call Action to your Google Analytics Custom Dimensions, you'll need to configure some. Make them look like the below image. What you call these custom dimensions is up to you: all that really matters is the <strong>index number in the second column</strong>: This must match the index number in the $ga_custom_dimensions array in the Class signature (or alternately, be specified using the <code>setCustomDimensions($array)</code> method), where <code>$array</code> is an array of numerical indexes matching Google Analytics Custom Dimension numbers, and the values match the names of the corresponding values passed by the DialogTech/IfByPhone Post-Call Action data send. As can be seen, this array starts at index '1' and can have up to '20' named custom dimensions (limited by Google). </p>
+
+<p><img src="http://i.imgur.com/DrucqKu.png" alt="Google Analytics Custom Dimensions"></p>
+
+<p>Setup and configuration consists of coordinating three elements:</p>
+
+<h2>
+<a id="3-setup-of-the-script-on-your-web-server" class="anchor" href="#3-setup-of-the-script-on-your-web-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Setup of the script on your web server.</h2>
+
+<p>Upload the included files (the active file is only an example of how to use the methods). Include the sample file code in your script (it will integrate in a rudimentary way without editing). By default, once the <strong>above two steps are accomplished (GA Custom Dimensions *<em>, the script will integrate in a basic way with Google Analytics, pushing basic data into your account. The only edit that is *</em>REQUIRED</strong> is the substitution of your Google Universal Analytics Property ID (UA-XXXXXXX-XX), for the placeholder in the sample file. This will use your server's settings to provide:</p>
+
+<ol>
+<li>Basic Required fields.</li>
+<li>Page, host and user data.</li>
+<li>Most of the information that can be automatically configured.</li>
+</ol>
+
+<pre><code>
+
+
+</code></pre>
+
+<p>The following give some ideas of how to use the methods to push additional data into Google Analytics.</p>
 
 <pre><code>$ cd your_repo_root/repo_name
 $ git fetch origin
