@@ -41,8 +41,8 @@
 &lt;/script&gt;
 </code></pre>
 
-<h2>
-<a id="this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" class="anchor" href="#this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" aria-hidden="true"><span class="octicon octicon-link"></span></a>This is a great system, but breaks down for users under some unique use cases/situations:</h2>
+<h1>
+<a id="this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" class="anchor" href="#this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" aria-hidden="true"><span class="octicon octicon-link"></span></a>This is a great system, but breaks down for users under some unique use cases/situations:</h1>
 
 <ol>
 <li>Users running browsers that are not Javascript enabled (rare) obviously won't be able to run the client-side Javascript.</li>
@@ -64,8 +64,8 @@
 <li>Device information, etc.</li>
 </ol>
 
-<h3>
-<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limitations!</h3>
+<h1>
+<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limitations!</h1>
 
 <p>My own intended use of this class precludes the inclusion of a number of the functions possible, and limits itself primarily to basic event/pageview information, and general call metadata, and does nothing yet to address the following potential actions (which would require new methods to be built-out, which cold be done quite simply, but I simply have no need for it). Examples include:</p>
 
@@ -75,7 +75,7 @@
 <li>Conversion tracking, etc.</li>
 </ol>
 
-<p>If these items are needed, perhaps discuss some use cases with the author, fork and create your own methods (Referring to the needed values and parameters documented at in the (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a> for the Measurement Protocol, or perhaps simply search for a better class for your purpose on Github. It should be a simple matter, following the design pattern shown in the class: add a public method for the purpose that inserts the values into the $this-&gt;payload array (or one-offs using the <code>setCustomDimension($name, $value)</code> method.</p>
+<p>If these above items are needed, perhaps discuss some use cases with the author, fork and create your own methods (Referring to the needed values and parameters documented at in the (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a> for the Measurement Protocol, or perhaps simply search for a better class for your purpose on Github. It should be a simple matter, following the design pattern shown in the class: add a public method for the purpose that inserts the values into the $this-&gt;payload array (or one-offs using the <code>setCustomDimension($name, $value)</code> method.</p>
 
 <h1>
 <a id="setup-and-configuration" class="anchor" href="#setup-and-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup and Configuration</h1>
@@ -87,7 +87,7 @@
 
 <p><img src="http://i.imgur.com/7FjyPo2.png" alt="DialogTech/IfByPhone Post-Call Action Panel Setup"></p>
 
-<p>It doesn't matter what you call the parameters in the left column of this setup, but bear in mind that they will be sent using these names, and the Class will expect them as such. Call them what you please, but they must match up to the $ga_custom_dimensions array (detailed below) which acts as the interpreter between the data sent, and which custom dimensions it is stored as in Google Analytics. For simplicity, set this up exactly as shown.</p>
+<p>It doesn't matter what you call the parameters in the left column of this setup, but bear in mind that they will be sent using these names, and the Class will expect them as such. Call them what you please, but they must match up to the <code>$ga_custom_dimensions</code> array (detailed below) which acts as the interpreter between the data sent, and which custom dimensions it is stored as in Google Analytics. For simplicity and initial configuration, set this up exactly as shown. Once you get it, go for broke.</p>
 
 <h2>
 <a id="2-setup-of-google-analytics-custom-dimensions" class="anchor" href="#2-setup-of-google-analytics-custom-dimensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Setup of Google Analytics Custom Dimensions</h2>
@@ -95,8 +95,6 @@
 <p>In order to match the data sent from the DialogTech Post-Call Action to your Google Analytics Custom Dimensions, you'll need to configure some. Make them look like the below image. What you call these custom dimensions is up to you: all that really matters is the <strong>index number in the second column</strong>: This must match the index number in the $ga_custom_dimensions array in the Class signature (or alternately, be specified using the <code>setCustomDimensions($array)</code> method), where <code>$array</code> is an array of numerical indexes matching Google Analytics Custom Dimension numbers, and the values match the names of the corresponding values passed by the DialogTech/IfByPhone Post-Call Action data send. As can be seen, this array starts at index '1' and can have up to '20' named custom dimensions (limited by Google). </p>
 
 <p><img src="http://i.imgur.com/DrucqKu.png" alt="Google Analytics Custom Dimensions"></p>
-
-<p>Setup and configuration consists of coordinating three elements:</p>
 
 <h2>
 <a id="3-setup-of-the-script-on-your-web-server" class="anchor" href="#3-setup-of-the-script-on-your-web-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Setup of the script on your web server.</h2>
@@ -109,34 +107,50 @@
 <li>Most of the information that can be automatically configured.</li>
 </ol>
 
-<pre><code>
+<pre><code> /* include the class */
+include('./googleAnalyticsMeasurementProtocolEvent.php');
 
+/* Instantiate the object with your UA ID (this one is NOT valid) &amp; optional label for the event */
+$event = new googleAnalyticsMeasurementProtocolEvent('UA-XXXXXXXX-X', "IVR Call");
+
+/* OPTIONALLY: Specify a data source to attribute this hit to */
+//$event-&gt;setDataSource('DialogTech.com');
+
+/* OPTIONALLY: Specify Default behavior: Whether to listen for
+ * input in the GET or POST array (I recommend POST, which is
+ * the default when omitted )
+ */
+
+//$event-&gt;setDefaultBehavior('POST');
+
+/* OPTIONALLY: Use test mode (which outputs info to the browser confirming parameters
+ * and values sent. Otherwise, only the tracking pixel gif itself is printed.
+ */
+//$event-&gt;testMode();
+
+/* OPTIONALLY: Give this event a category, type, label, and value */
+$event-&gt;createEventData('Lead', 'call', 'IVR Call', 50);
+
+/* OPTIONALLY, BUT RECOMMENDED: Name your utm_ parameters in an array
+ * and add them using this method: other items in array will be ignored.
+ * $campaign = array(
+ *       'utm_campaign' =&gt; 'June Marketing',
+ *       'utm_source' =&gt; 'June Postcard Mailer',
+ *       'utm_medium' =&gt; 'Direct Mail',
+ *       'utm_content' =&gt; 'Buy-back Offers',
+ *       'utm_term' =&gt; 'N/A'
+ *  );
+ */
+//$event-&gt;createCampaignParameters($campaign);
 
 </code></pre>
 
-<p>The following give some ideas of how to use the methods to push additional data into Google Analytics.</p>
+<p>At script end (on Destruct), the cookie is sent (if display is irrelevant). If a page actually needs to display something.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h1>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>This project is maintained by Daniel Benjamin, <a href="https://github.com/eshlepper" class="user-mention">@eshlepper</a>, eShlepper Marketing, Inc <a href="http://www.eshlepper.com">Automotive Marketing, Digital Advertising, Lead Generation, Direct Mail</a>. </p>
 
 <h3>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
