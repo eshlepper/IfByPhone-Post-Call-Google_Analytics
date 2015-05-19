@@ -12,7 +12,7 @@ class googleAnalyticsMeasurementProtocolEvent  {
     private $testing = TRUE ;
     
     /* Use POST/GET/AUTO for input */
-    private $default_behavior = 'GET'; 
+    private $default_behavior = 'POST'; 
     
     /* Storage for the above choice */
     private $_ARRAY = array();
@@ -23,6 +23,8 @@ class googleAnalyticsMeasurementProtocolEvent  {
     /* Endpoint of Google Analytics API Call */
     private $base_url = 'www.google-analytics.com/collect';
     
+    /* Flag to prevent double-sends when sendPayload() method is called directly */
+    private $payload_is_sent = FALSE ;
     
     /* Map of custom dimensions from GA->Account->Property->Custom Dimensions setup.
      * Mapped as int custom_dimension_id => variable_name (as expected in $_POST/$_GET array)
@@ -76,13 +78,13 @@ class googleAnalyticsMeasurementProtocolEvent  {
     function __construct($ua_property_id, $event = 'pageview') {
         $this->setDefaultBehavior();
         
-        
         $this->payload['dl'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; /* Document Location */
         
         $this->payload['dh'] = $_SERVER['HTTP_HOST']; /* Document Host */
         
         $uri = explode("?", $_SERVER['REQUEST_URI']);
         $this->payload['dp'] = array_shift($uri); /* Document Path */
+        
         $this->payload['tid'] = $ua_property_id ; /* Tracking ID AKA Google Universal Analytics Property ID "UA Number" */
         $this->payload['v'] = $this->v ; /* GA Version */
         $this->payload['cid'] = $this->cid ; /* Client ID */
@@ -95,9 +97,6 @@ class googleAnalyticsMeasurementProtocolEvent  {
     /* Tells which array to use by default to set various automatic parameters */
     public function setDefaultBehavior($array = FALSE) {
         switch($array) {
-            case 'POST': case 'post':
-                $this->_ARRAY = $_POST ;
-                break;
             case 'GET': case 'get':
                 $this->_ARRAY = $_GET ;
                 break;
@@ -225,12 +224,14 @@ class googleAnalyticsMeasurementProtocolEvent  {
     }
     
 
-  
-    /* Wrap things up, compute automatic fields, and send the data on destruct */
+ 
+   
+
+  /* Wrap things up, compute automatic fields, and send the data on destruct 
+   * if not already sent.
+   */
     function __destruct() {
-        $this->createProxyData();
-        $this->createCustomDimensions();
-        $this->sendPayload();
+        if(!$this->payload_is_sent) $this->sendPayload();
 
     }
     
@@ -240,7 +241,10 @@ class googleAnalyticsMeasurementProtocolEvent  {
          * So, you must either call header('Content-type:image/gif');
          * or wrap in HTML as image <img src='$url' /> to Display.
          */ 
-
+        
+            $this->createProxyData();
+            $this->createCustomDimensions();
+            
             foreach($this->payload as $i => $v) {
                 if(strlen($v) > 0) {
                     $params[] = urlencode($i) . '=' . urlencode($v) ;
@@ -263,11 +267,11 @@ class googleAnalyticsMeasurementProtocolEvent  {
                 echo "<img src='$url' />";
             }
             
-            
+            $this->payload_is_sent = TRUE ;
     
     }
     
-}
+
 
 
 
