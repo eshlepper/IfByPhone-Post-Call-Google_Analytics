@@ -45,15 +45,15 @@
 <a id="this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" class="anchor" href="#this-is-a-great-system-but-breaks-down-for-users-under-some-unique-use-casessituations" aria-hidden="true"><span class="octicon octicon-link"></span></a>This is a great system, but breaks down for users under some unique use cases/situations:</h1>
 
 <ol>
-<li>Users running browsers that are not Javascript enabled (rare) obviously won't be able to run the client-side Javascript.</li>
-<li>Users who have deliberately disabled Javascript in their security settings are a growing demographic for website users. Often, for security or privacy reasons this is disabled, or simply to forcibly opt-out of advertising.</li>
-<li>Users working in enterprise environments where the same is done and enforced by corporate IT pros. This can create problems and usability issues, but core business apps are enabled, and ancillary things like this fall by the wayside.</li>
-<li>Web apps that don't actually display output to a browser (such as a silent webhook, or background process). If nothing is displayed in a browser (where the Javascript runs), no analytics is collected.</li>
-<li>Similarly, traffic and operations on or between web servers, such as remote fetches, API calls, etc, are effected between servers, which don't load, process, run, or interact with Javascript as a browser client would.</li>
+<li><p>Users running browsers that are not Javascript enabled (rare) obviously won't be able to run the client-side Javascript.</p></li>
+<li><p>Users who have deliberately disabled Javascript in their security settings are a growing demographic for website users. Often, for security or privacy reasons this is disabled, or simply to forcibly opt-out of advertising.</p></li>
+<li><p>Users working in enterprise environments where the same is done and enforced by corporate IT pros. This can create problems and usability issues, but core business apps are enabled, and ancillary things like this fall by the wayside.</p></li>
+<li><p>Web apps that don't actually display output to a browser (such as a silent webhook, or background process). If nothing is displayed in a browser (where the Javascript runs), no analytics is collected.</p></li>
+<li><p>Similarly, traffic and operations on or between web servers, such as remote fetches, API calls, etc, are effected between servers, which don't load, process, run, or interact with Javascript as a browser client would.</p></li>
 </ol>
 
-<h2>
-<a id="these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" class="anchor" href="#these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>These last two (really just one) scenarios are the purpose of this class</h2>
+<h1>
+<a id="these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" class="anchor" href="#these-last-two-really-just-one-scenarios-are-the-purpose-of-this-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>These last two (really just one) scenarios are the purpose of this class</h1>
 
 <p>The purpose of this class is to utilize the Google Analytics "Measurement Protocol" API (<a href="https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide">Google Developer Pages</a>, which allows all the parameters that would be collected via the Javascript API to be specified. Unfortunately, while these would be collected in a purely automated fashion by the Javascript API, using the Measurement Protocol requires these to be manually specified (and of course lacks access to many client-side functions that are only available to Javascript running in a user's browser… sorry), such as many of the following:</p>
 
@@ -67,7 +67,7 @@
 <h1>
 <a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limitations!</h1>
 
-<p>My own intended use of this class precludes the inclusion of a number of the functions possible, and limits itself primarily to basic event/pageview information, and general call metadata, and does nothing yet to address the following potential actions (which would require new methods to be built-out, which cold be done quite simply, but I simply have no need for it). Examples include:</p>
+<p>My own intended use of this class precludes the inclusion of a number of the functions possible, and limits itself primarily to basic event/pageview information, and general call metadata, and does nothing yet to address the following potential actions (which would require new methods to be built-out, which could be done quite simply, but I simply have no need for it). Examples include:</p>
 
 <ol>
 <li>Ecommerce functions: product prices, tax, totals, etc.</li>
@@ -99,7 +99,7 @@
 <h2>
 <a id="3-setup-of-the-script-on-your-web-server" class="anchor" href="#3-setup-of-the-script-on-your-web-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Setup of the script on your web server.</h2>
 
-<p>Upload the included files (the active file is only an example of how to use the methods). Include the sample file code in your script (it will integrate in a rudimentary way without editing). By default, once the <strong>above two steps are accomplished (GA Custom Dimensions *<em>, the script will integrate in a basic way with Google Analytics, pushing basic data into your account. The only edit that is *</em>REQUIRED</strong> is the substitution of your Google Universal Analytics Property ID (UA-XXXXXXX-XX), for the placeholder in the sample file. This will use your server's settings to provide:</p>
+<p>Upload the included files (the active file is only an example of how to use the methods). Include the sample file code in your script (it will integrate in a rudimentary way without editing). By default, once the <strong><em>above two steps are accomplished (GA Custom Dimensions</em></strong>, the script will integrate in a basic way with Google Analytics, pushing basic data into your account. The only edit that is <strong>REQUIRED</strong> is the substitution of your Google Universal Analytics Property ID (UA-XXXXXXX-XX), for the placeholder in the sample file. This will use your server's settings to provide:</p>
 
 <ol>
 <li>Basic Required fields.</li>
@@ -107,10 +107,12 @@
 <li>Most of the information that can be automatically configured.</li>
 </ol>
 
-<pre><code> /* include the class */
+<pre><code> /* include the class file */
 include('./googleAnalyticsMeasurementProtocolEvent.php');
 
-/* Instantiate the object with your UA ID (this one is NOT valid) &amp; optional label for the event */
+/* Instantiate the object with your UA ID (this one is NOT valid) &amp; optional label 
+ *  for the event (defaults to 'pageview' if omitted 
+ */
 $event = new googleAnalyticsMeasurementProtocolEvent('UA-XXXXXXXX-X', "IVR Call");
 
 /* OPTIONALLY: Specify a data source to attribute this hit to */
@@ -118,17 +120,25 @@ $event = new googleAnalyticsMeasurementProtocolEvent('UA-XXXXXXXX-X', "IVR Call"
 
 /* OPTIONALLY: Specify Default behavior: Whether to listen for
  * input in the GET or POST array (I recommend POST, which is
- * the default when omitted )
+ * the default when omitted). Note that this has nothing to do 
+ * with how the data is sent to GA: That is always a GET request.
  */
 
-//$event-&gt;setDefaultBehavior('POST');
+//$event-&gt;setDefaultBehavior('GET');
+
+/* OPTIONALLY, BUT RECOMMENDED (THIS IS THE POINT OF THIS APP): Map Custom Dimensions
+ * by either editing the $custom_dimension_map field directly, or passing in a map of your own
+ * using the mapCustomDimensions($new_map) method.
+//$event-&gt;mapCustomDimensions(array $new_map);
 
 /* OPTIONALLY: Use test mode (which outputs info to the browser confirming parameters
- * and values sent. Otherwise, only the tracking pixel gif itself is printed.
+ * and values sent. Otherwise, only the tracking pixel gif itself is displayed.
  */
 //$event-&gt;testMode();
 
-/* OPTIONALLY: Give this event a category, type, label, and value */
+/* OPTIONALLY: Give this event a category, type, label, and value; This info will
+ * be displayed in GA as your events and their labels, etc.
+ */
 $event-&gt;createEventData('Lead', 'call', 'IVR Call', 50);
 
 /* OPTIONALLY, BUT RECOMMENDED: Name your utm_ parameters in an array
@@ -149,7 +159,18 @@ $event-&gt;createEventData('Lead', 'call', 'IVR Call', 50);
 //$event-&gt;sendPayload();
 </code></pre>
 
-<p>At script end (on Destruct), the cookie is sent (if display is irrelevant). If a page actually needs to display something in proper HTML, call the <code>sendPayload()</code> method directly (it will disable the send on <code>__destruct()</code>).</p>
+<p>At script end (on Destruct), the call is made and pixel is returned (if display is irrelevant). If a page actually needs to display something in proper HTML, call the <code>sendPayload()</code> method directly (it will disable the send on <code>__destruct()</code>; in any case, it only sends once per object, and then disables itself to prevent duplicate submissions).</p>
+
+<h1>
+<a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Troubleshooting</h1>
+
+<p>These are the most common configuration issues:
+1. GET vs. POST. All data is sent to GA via a GET request. This setting refers to where the app looks for the <strong><em>incoming data</em></strong>. If you are sending it via GET, specify GET by calling the <code>setDefaultBehavior('GET')</code> method before sending the payload. If you are sending via POST, no action is needed, this is the default scenario.</p>
+
+<ol>
+<li>
+</li>
+</ol>
 
 <h1>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
