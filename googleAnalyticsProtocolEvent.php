@@ -292,9 +292,13 @@ class googleAnalyticsMeasurementProtocolEvent  {
                 }
             }
             
+            
             $url =  ( ( $this->testing) ? ( $this->test_url ) : ( $this->base_url ) ) . 
                     '?' . implode('&', $params);
             
+//            $url =  ( ( $this->testing) ? ( $this->test_url ) : ( $this->base_url ) ) . 
+//                    '?' . http_build_query($this->payload, "&");
+
             
             switch($this->output) {
                 case 'silent':
@@ -305,10 +309,10 @@ class googleAnalyticsMeasurementProtocolEvent  {
                     $this->displayNoScriptPixel($url);
                     break;
                 case 'pixel':
-                    echo "<img height='1' width='1' style='border-style:none;' alt='' src='http://$url&method=NAKED_PIXEL' />";
+                    echo "<img height='1' width='1' style='border-style:none;' alt='' src='https://$url&method=NAKED_PIXEL' />";
                     break;
                 case 'javascript':
-                    /* TODO build javascript version */
+                    /* TODO build dynamic javascript version */
                     $this->displayJavascript();
                     break;
                 case 'auto':
@@ -379,7 +383,7 @@ class googleAnalyticsMeasurementProtocolEvent  {
     private function displayNoScriptPixel($url) {
           echo "<noscript>
             <div style='display:inline;'>
-                <img height='1' width='1' style='border-style:none;' alt='' src='http://$url&method=NOSCRIPT_PIXEL' />
+                <img height='1' width='1' style='border-style:none;' alt='' src='https://$url&method=NOSCRIPT_PIXEL' />
             </div>
           </noscript>\n";
     }
