@@ -173,8 +173,8 @@ $event-&gt;createEventData('Lead', 'call', 'IVR Call', 50);
 1. GET vs. POST. All data is sent to GA via a GET request. This setting refers to where the app looks for the <strong><em>incoming data</em></strong>. If you are sending it via GET, specify GET by calling the <code>setDefaultBehavior('GET')</code> method before sending the payload. If you are sending via POST, no action is needed, this is the default scenario.</p>
 
 <ol>
-<li>
-</li>
+<li><p>How to tell if it is working correctly? Enable test mode, which will output the pixel to a browser. You should be able to see the pixel by viewing the page source, which should tell you the size of the pixel and file type (obviously it is just one transparent pixel, so don't expect it to be easy to see). GAMP will only return a pixel if this is done right.</p></li>
+<li><p>How do I pass in utm_ parameters? Actually, by default, the class will look in the $_GET array for the big five UTM params, utm_campaign, utm_source, utm_medium, utm_term and utm_content. If they do not appear in the $_GET array, you can dynamically add them (or statically) by calling the createCampaignParameters() method, and passing it an associative array keyed with these param names.</p></li>
 </ol>
 
 <h1>
